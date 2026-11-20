@@ -23,7 +23,7 @@ const PROGRAM = {
 
   // Shown in the "key facts" list on the page and in the pack. Any text works.
   facts: [
-    { label: 'When',       value: 'Summer holidays' },
+    { label: 'When',       value: 'Summer holidays (December and January sessions)' },
     { label: 'Where',      value: 'Marsden Park Community Centre' },
     { label: 'Group size', value: 'Small groups' }
   ],
@@ -63,15 +63,14 @@ const PROGRAM = {
     {
       title: 'Key details',
       facts: [
-        { label: 'When',     value: 'Summer holidays (exact dates to be confirmed)' },
+        { label: 'When',     value: 'Summer holidays (December and January sessions)' },
         { label: 'Location', value: 'Marsden Park Community Centre' }
       ]
     },
     {
       title: 'What we will cover',
       lines: [
-        'We cover the crucial topics that come up in the HSC.',
-        'The exact topics are still being finalised. We will build the plan around what the group tells us it wants help with.', // TODO
+        'We cover the most crucial topics of Year 11 and 12 that will be in the HSC.',
         'Sessions are small-group, so every student gets time to ask questions.' // TODO check
       ]
     },
