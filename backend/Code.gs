@@ -2,7 +2,7 @@
  * Holiday program EOI back end (Google Apps Script web app).
  *
  * - GET  ?action=program  -> public program details + places left
- * - POST (JSON, sent as text/plain) -> validate and save to the Sheet. No emails are sent.
+ * - POST (JSON, sent as text/plain) -> validate, save to the Sheet, email the info pack
  *
  * Everything you need to edit is in the PROGRAM block below. Search for TODO.
  * Setup steps are in README.md.
@@ -10,11 +10,12 @@
 
 // ---------------------------------------------------------------------------
 // EDIT THIS: program details. These feed the web page, the confirmation
-// screen and the info pack, so you only change them here.
+// screen and the info pack email, so you only change them here.
 // ---------------------------------------------------------------------------
 const PROGRAM = {
   name: 'Holiday Program',                          // TODO: working title, replace with your name
   organisers: ['Dhwanit', 'Khush'],                 // first names shown on the page
+  contactEmail: 'dhwanit2005@gmail.com',           // TODO: replies to the info pack email go here (not shown on the page). Use a shared address if you have one
   contactName: 'Khush',
   contactPhone: '0426 846 426',                      // shown on the page and in the pack for questions
   capacity: 20,                                    // TODO: places offered before the waitlist starts. 0 = no limit
@@ -40,7 +41,7 @@ const PROGRAM = {
 
   privacyNote: "We only use these details to contact you about this program. We don't share them with anyone else.", // TODO check this matches what you actually do
 
-  // Shown on the confirmation screen.
+  // Shown on the confirmation screen and in the email.
   messages: {
     interested: "Your interest is registered. Places are confirmed once the dates are final, and we'll contact you then.", // TODO
     waitlist: "Places are full right now, so you're on the waitlist. We'll contact you if a place opens up." // TODO
@@ -73,17 +74,20 @@ const PROGRAM = {
     {
       title: 'What happens next',
       steps: [
-        'We will be in touch using the contact details you gave us.',
+        'Keep an eye on your email (and check junk) for updates.',
         'We confirm the dates, then contact the parent or guardian.',
         'You confirm your place.' // TODO adjust to your real process
       ]
     },
     {
       title: 'Questions',
-      lines: ['Call Khush on 0426 846 426.']
+      lines: ['Call Khush on 0426 846 426, or reply to this email.']
     }
   ]
 };
+
+// Organisers who get a short email on every new signup. Leave empty to turn off.
+const NOTIFY_EMAILS = []; // e.g. ['you@gmail.com', 'friend@gmail.com']
 
 // ---------------------------------------------------------------------------
 // Internals. You should not need to edit below this line.
@@ -95,11 +99,11 @@ const MIN_FILL_MS = 3000; // faster than this = probably a bot
 const HEADERS = [
   'Timestamp', 'Status', 'Position', 'First name', 'Last name', 'Year',
   'School', 'Courses', 'Parent/guardian name', 'Parent/guardian email',
-  'Parent/guardian mobile', 'Heard about us', 'Referred by', 'Anything else', 'Notes'
+  'Parent/guardian mobile', 'Heard about us', 'Referred by', 'Anything else', 'Info pack emailed', 'Notes'
 ];
 const H = {
   TS: 0, STATUS: 1, POS: 2, FIRST: 3, LAST: 4, YEAR: 5, SCHOOL: 6,
-  COURSES: 7, PNAME: 8, PEMAIL: 9, PMOBILE: 10, HEARD: 11, REFERRER: 12, GOALS: 13, NOTES: 14
+  COURSES: 7, PNAME: 8, PEMAIL: 9, PMOBILE: 10, HEARD: 11, REFERRER: 12, GOALS: 13, EMAILED: 14, NOTES: 15
 };
 const ST_INTERESTED = 'Interested';
 const ST_WAITLIST = 'Waitlist';
@@ -108,6 +112,7 @@ const ST_WAITLIST = 'Waitlist';
 /** Run this once from the editor to create the sheet and approve permissions. */
 function setup() {
   getSheet_();
+  MailApp.getRemainingDailyQuota(); // triggers the email permission prompt
 }
 
 function doGet(e) {
@@ -134,7 +139,7 @@ function doPost(e) {
     // Bots get a normal-looking success and nothing is saved or sent.
     return json_({
       ok: true, status: ST_INTERESTED, position: null, capacity: PROGRAM.capacity, placesLeft: null,
-      alreadyRegistered: false, firstName: 'there',
+      alreadyRegistered: false, emailSent: false, firstName: 'there',
       message: PROGRAM.messages.interested, pack: PROGRAM.pack
     });
   }
@@ -156,7 +161,7 @@ function doPost(e) {
     if (existing) {
       return json_(buildResponse_({
         status: existing.v[H.STATUS], position: Number(existing.v[H.POS]) || null,
-        firstName: f.firstName, rows: rows, alreadyRegistered: true,
+        firstName: f.firstName, rows: rows, alreadyRegistered: true, emailSent: false,
         summary: summary_(existing.v[H.YEAR], existing.v[H.COURSES])
       }));
     }
@@ -187,6 +192,7 @@ function doPost(e) {
     row[H.HEARD] = f.heard;
     row[H.REFERRER] = f.referrer;
     row[H.GOALS] = f.goals;
+    row[H.EMAILED] = 'No';
     sheet.getRange(rowNumber, 1, 1, HEADERS.length).setValues([row]);
     SpreadsheetApp.flush();
     rows.push({ row: rowNumber, v: row });
@@ -194,9 +200,20 @@ function doPost(e) {
     lock.releaseLock();
   }
 
+  // Email outside the lock so a slow send doesn't block other signups.
+  let emailSent = false;
+  try {
+    emailSent = sendPack_(f, status, position);
+    if (emailSent) sheet.getRange(rowNumber, H.EMAILED + 1).setValue('Yes');
+  } catch (err) {
+    console.error('Pack email failed: ' + err);
+    sheet.getRange(rowNumber, H.NOTES + 1).setValue('Email failed: ' + String(err).slice(0, 200));
+  }
+  notifyOrganisers_(f, status, position);
+
   return json_(buildResponse_({
     status: status, position: position, firstName: f.firstName, rows: rows,
-    alreadyRegistered: false, summary: summary_(f.year, f.courses.join(', '))
+    alreadyRegistered: false, emailSent: emailSent, summary: summary_(f.year, f.courses.join(', '))
   }));
 }
 
@@ -327,11 +344,97 @@ function buildResponse_(o) {
     capacity: PROGRAM.capacity,
     placesLeft: PROGRAM.showPlaces ? placesLeft_(o.rows) : null,
     alreadyRegistered: o.alreadyRegistered,
+    emailSent: o.emailSent,
     summary: o.summary || '',
     firstName: o.firstName,
     message: o.status === ST_WAITLIST ? PROGRAM.messages.waitlist : PROGRAM.messages.interested,
     pack: PROGRAM.pack
   };
+}
+
+// ---------------------------------------------------------------------------
+// Email
+// ---------------------------------------------------------------------------
+function esc_(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function packHtml_() {
+  return PROGRAM.pack.map(function (s) {
+    let body = '';
+    if (s.facts) {
+      body += '<table role="presentation" style="border-collapse:collapse;width:100%">' + s.facts.map(function (x) {
+        return '<tr><td style="padding:4px 12px 4px 0;color:#46526B;vertical-align:top;white-space:nowrap">' + esc_(x.label) +
+          '</td><td style="padding:4px 0"><span style="background:#FFE66D;padding:1px 4px">' + esc_(x.value) + '</span></td></tr>';
+      }).join('') + '</table>';
+    }
+    if (s.lines) {
+      body += '<ul style="margin:0;padding-left:20px">' + s.lines.map(function (l) {
+        return '<li style="margin:4px 0">' + esc_(l) + '</li>';
+      }).join('') + '</ul>';
+    }
+    if (s.steps) {
+      body += '<ol style="margin:0;padding-left:20px">' + s.steps.map(function (l) {
+        return '<li style="margin:4px 0">' + esc_(l) + '</li>';
+      }).join('') + '</ol>';
+    }
+    return '<h3 style="margin:24px 0 8px;font-size:17px;color:#14213D">' + esc_(s.title) + '</h3>' + body;
+  }).join('');
+}
+
+function packText_() {
+  return PROGRAM.pack.map(function (s) {
+    const out = [s.title.toUpperCase()];
+    (s.facts || []).forEach(function (x) { out.push(x.label + ': ' + x.value); });
+    (s.lines || []).forEach(function (l) { out.push('- ' + l); });
+    (s.steps || []).forEach(function (l, i) { out.push((i + 1) + '. ' + l); });
+    return out.join('\n');
+  }).join('\n\n');
+}
+
+function sendPack_(f, status, position) {
+  if (MailApp.getRemainingDailyQuota() < 2) return false;
+  const lead = status === ST_WAITLIST ? PROGRAM.messages.waitlist : PROGRAM.messages.interested;
+  const place = status === ST_WAITLIST ? 'Waitlist no. ' + position : 'Interest no. ' + position;
+  const html =
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#14213D;max-width:560px">' +
+    '<h2 style="margin:0 0 4px;font-size:22px">' + esc_(PROGRAM.name) + '</h2>' +
+    '<p style="margin:0 0 16px;color:#46526B">' + esc_(place) + '</p>' +
+    '<p>Hi ' + esc_(f.firstName) + ',</p>' +
+    '<p>' + esc_(lead) + '</p>' +
+    '<p><strong>You registered for:</strong> ' + esc_(summary_(f.year, f.courses.join(', '))) + '</p>' +
+    '<p>Here is the info pack.</p>' + packHtml_() +
+    '<p style="margin-top:28px">From ' + esc_(PROGRAM.organisers.join(' and ')) + '</p></div>';
+  const text = 'Hi ' + f.firstName + ',\n\n' + lead + '\n\nYou registered for: ' +
+    summary_(f.year, f.courses.join(', ')) + '\n\nHere is the info pack.\n\n' + packText_() +
+    '\n\nFrom ' + PROGRAM.organisers.join(' and ');
+
+  const opts = {
+    to: f.parentEmail,
+    subject: PROGRAM.name + ': your info pack',
+    body: text,
+    htmlBody: html,
+    name: PROGRAM.name,
+    replyTo: PROGRAM.contactEmail
+  };
+  MailApp.sendEmail(opts);
+  return true;
+}
+
+function notifyOrganisers_(f, status, position) {
+  if (!NOTIFY_EMAILS.length) return;
+  try {
+    MailApp.sendEmail(
+      NOTIFY_EMAILS.join(','),
+      'New signup: ' + f.firstName + ' ' + f.lastName + ' (' + status + ' ' + position + ')',
+      f.firstName + ' ' + f.lastName + ', ' + f.school + '\n' + summary_(f.year, f.courses.join(', ')) +
+      '\nParent: ' + f.parentName + ', ' + f.parentEmail +
+      (f.referrer ? '\nReferred by: ' + f.referrer : '')
+    );
+  } catch (err) {
+    console.error('Notify failed: ' + err);
+  }
 }
 
 function json_(obj) {
