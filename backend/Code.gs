@@ -70,7 +70,8 @@ const PROGRAM = {
     {
       title: 'What we will cover',
       lines: [
-        'Topics are still being finalised. We will build the plan around what the group tells us it wants help with.', // TODO
+        'We cover the crucial topics that come up in the HSC.',
+        'The exact topics are still being finalised. We will build the plan around what the group tells us it wants help with.', // TODO
         'Sessions are small-group, so every student gets time to ask questions.' // TODO check
       ]
     },
