@@ -53,12 +53,8 @@ const PROGRAM = {
       title: 'Program format',
       lines: [
         '5-day program',
-        '2 hours per subject'
+        '2 hours per subject, each day'
       ]
-    },
-    {
-      title: 'Price',
-      lines: ['$40 per hour']
     }
   ],
 
