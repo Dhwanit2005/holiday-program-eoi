@@ -229,7 +229,7 @@
 </style>
 </head>
 <body>
-<div class="demo-banner noprint" id="demoBanner" hidden>Preview mode: nothing you enter is saved or emailed. Connect the back end to go live.</div>
+<div class="demo-banner noprint" id="demoBanner" hidden>Preview mode: nothing you enter is saved. Connect the back end to go live.</div>
 
 <div class="page">
   <header class="top noprint"><span class="wordmark" id="brand"></span></header>
@@ -239,7 +239,7 @@
   <main id="main" data-state="form">
     <section class="intro noprint" aria-labelledby="title">
       <h1 id="title">Make the school holidays count.</h1>
-      <p class="lede">A small-group tutoring program for Year 11 and Year 12 students, run by two tutors. Parents and students can register in about three minutes. Registering doesn't commit you to anything. We'll email the info pack straight away.</p>
+      <p class="lede">A small-group tutoring program for Year 11 and Year 12 students, run by two tutors. Parents and students can register in about three minutes. Registering doesn't commit you to anything. You'll see the info pack straight away.</p>
       <dl class="facts" id="facts"></dl>
       <p class="pen" id="places" hidden></p>
 
@@ -247,15 +247,15 @@
         <h2>How it works</h2>
         <ol class="how">
           <li><strong>Register your interest.</strong> Three short steps: the student, the courses, then a parent or guardian.</li>
-          <li><strong>Get the info pack.</strong> It's emailed to the parent or guardian straight away, and shown on screen.</li>
+          <li><strong>Get the info pack.</strong> It appears on screen as soon as you register. You can print or save it.</li>
           <li><strong>We confirm the details.</strong> Once the dates are final, we contact you. You then decide whether to confirm a place.</li>
         </ol>
         <h2>Common questions</h2>
         <details><summary>Does registering commit us?</summary><p>No. This only tells us you're interested.</p></details>
-        <details><summary>Who should fill this in?</summary><p>Either the student or a parent or guardian. We email the info pack to the parent or guardian's address.</p></details>
+        <details><summary>Who should fill this in?</summary><p>Either the student or a parent or guardian. We'll contact the parent or guardian using the details given.</p></details>
         <details><summary>What if places are full?</summary><p>You'll be added to the waitlist and we'll contact you if a place opens up.</p></details>
         <details><summary>What do you do with our details?</summary><p id="faqPrivacy"></p></details>
-        <details><summary>Who do I contact with questions?</summary><p id="faqContact">Reply to the info pack email once you receive it.</p></details>
+        <details><summary>Who do I contact with questions?</summary><p id="faqContact">Call Khush on 0426 846 426.</p></details>
       </div>
     </section>
 
@@ -309,7 +309,7 @@
         <!-- Step 3 -->
         <div class="panel" data-panel="3" hidden>
           <h3 tabindex="-1">Parent or guardian</h3>
-          <p class="hint">We email the info pack to this address.</p>
+          <p class="hint">We'll use these details to contact you.</p>
           <div class="field">
             <label for="parentName">Name</label>
             <input type="text" id="parentName" name="parentName" autocomplete="off" maxlength="100" required>
@@ -430,13 +430,13 @@
     referralOption: 'A friend referred me',
     heardOptions: ['A friend referred me', 'School', 'Social media', 'Other'],
     privacyNote: "We only use these details to contact you about this program. We don't share them with anyone else.",
-    contactEmail: 'hello@example.com', contactName: 'Khush', contactPhone: '0426 846 426', capacity: 3, showPlaces: true, placesLeft: 3
+    contactName: 'Khush', contactPhone: '0426 846 426', capacity: 3, showPlaces: true, placesLeft: 3
   };
   var DEMO_PACK = [
     { title: 'Key details', facts: [{ label: 'When', value: 'Summer holidays (exact dates to be confirmed)' }, { label: 'Location', value: 'Marsden Park Community Centre' }] },
     { title: 'What we will cover', lines: ['Topics are still being finalised. We will build the plan around what the group tells us it wants help with.', 'Sessions are small-group, so every student gets time to ask questions.'] },
     { title: 'What to bring', lines: ['A calculator approved for NESA exams', 'Your notes or workbooks', 'Pens, a notepad and a water bottle'] },
-    { title: 'What happens next', steps: ['Keep an eye on your email (and check junk) for updates.', 'We confirm the dates, then contact the parent or guardian.', 'You confirm your place.'] }
+    { title: 'What happens next', steps: ['We will be in touch using the contact details you gave us.', 'We confirm the dates, then contact the parent or guardian.', 'You confirm your place.'] }
   ];
   var demoRows = [];
 
@@ -469,7 +469,7 @@
           var left = Math.max(0, DEMO_PROGRAM.capacity - demoRows.filter(function (r) { return r.status === 'Interested'; }).length);
           resolve({
             ok: true, status: status, position: position, capacity: DEMO_PROGRAM.capacity, placesLeft: left,
-            alreadyRegistered: already, emailSent: !already, firstName: payload.firstName, summary: summary,
+            alreadyRegistered: already, firstName: payload.firstName, summary: summary,
             message: status === 'Waitlist'
               ? "Places are full right now, so you're on the waitlist. We'll contact you if a place opens up."
               : "Your interest is registered. Places are confirmed once the dates are final, and we'll contact you then.",
@@ -737,9 +737,8 @@
     $('confirmSummary').textContent = res.summary ? 'Registered for: ' + res.summary : '';
 
     var note;
-    if (res.alreadyRegistered) note = 'This email is already registered, so we haven’t sent another one. The pack is below.';
-    else if (res.emailSent) note = 'We’ve emailed the pack to the parent or guardian. It’s also below.';
-    else note = 'We couldn’t email the pack. It’s below, and you can print or save it.';
+    if (res.alreadyRegistered) note = 'You’re already registered, so we haven’t added you again. The info pack is below. We don’t email it, so print or save it to keep a copy.';
+    else note = 'The info pack is below. We don’t email it, so print or save it to keep a copy. We’ll contact you using the details you gave.';
     $('confirmNote').textContent = note;
 
     renderPack(res.pack || [], program);
@@ -756,19 +755,12 @@
 
   $('printBtn').addEventListener('click', function () { window.print(); });
 
-  // "Call Khush on 0426 846 426 or email x@y." Builds links with DOM calls, no HTML parsing.
-  function fillContact(target, p, callLead, mailLead) {
+  // "Call Khush on 0426 846 426." Builds links with DOM calls, no HTML parsing.
+  function fillContact(target, p, callLead) {
     target.textContent = '';
-    var hasPhone = !!p.contactPhone, hasMail = !!p.contactEmail;
-    if (!hasPhone && !hasMail) return;
-    if (hasPhone) {
-      target.appendChild(document.createTextNode(callLead + (p.contactName ? p.contactName + ' on ' : '')));
-      var t = el('a', p.contactPhone); t.href = 'tel:' + p.contactPhone.replace(/[^0-9+]/g, ''); target.appendChild(t);
-    }
-    if (hasMail) {
-      target.appendChild(document.createTextNode(hasPhone ? ', or ' + mailLead.toLowerCase() : mailLead));
-      var m = el('a', p.contactEmail); m.href = 'mailto:' + p.contactEmail; target.appendChild(m);
-    }
+    if (!p.contactPhone) return;
+    target.appendChild(document.createTextNode(callLead + (p.contactName ? p.contactName + ' on ' : '')));
+    var t = el('a', p.contactPhone); t.href = 'tel:' + p.contactPhone.replace(/[^0-9+]/g, ''); target.appendChild(t);
     target.appendChild(document.createTextNode('.'));
   }
 
@@ -783,8 +775,8 @@
     fillSelect($('heard'), p.heardOptions || []);
     $('privacy').textContent = p.privacyNote || '';
     $('faqPrivacy').textContent = p.privacyNote || '';
-    fillContact($('faqContact'), p, 'Call ', 'Email ');
-    fillContact($('contactLine'), p, 'Questions? Call ', 'email ');
+    fillContact($('faqContact'), p, 'Call ');
+    fillContact($('contactLine'), p, 'Questions? Call ');
     $('byline').textContent = p.organisers && p.organisers.length ? 'Run by ' + p.organisers.join(' and ') + '.' : '';
     renderPlaces(p);
   }
