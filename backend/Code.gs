@@ -77,6 +77,7 @@ const PROGRAM = {
     {
       title: 'What to bring',
       lines: [
+        'The booklet will be provided',
         'A calculator approved for NESA exams',
         'Your notes or workbooks for the courses you chose',
         'Pens, a notepad and a water bottle'
