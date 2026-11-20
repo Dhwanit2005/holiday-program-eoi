@@ -96,12 +96,12 @@ const MIN_FILL_MS = 3000; // faster than this = probably a bot
 
 const HEADERS = [
   'Timestamp', 'Status', 'Position', 'First name', 'Last name', 'Year',
-  'Student mobile', 'School', 'Courses', 'Parent/guardian name', 'Parent/guardian email',
+  'School', 'Courses', 'Parent/guardian name', 'Parent/guardian email',
   'Parent/guardian mobile', 'Heard about us', 'Referred by', 'Anything else', 'Info pack emailed', 'Notes'
 ];
 const H = {
-  TS: 0, STATUS: 1, POS: 2, FIRST: 3, LAST: 4, YEAR: 5, SMOBILE: 6, SCHOOL: 7,
-  COURSES: 8, PNAME: 9, PEMAIL: 10, PMOBILE: 11, HEARD: 12, REFERRER: 13, GOALS: 14, EMAILED: 15, NOTES: 16
+  TS: 0, STATUS: 1, POS: 2, FIRST: 3, LAST: 4, YEAR: 5, SCHOOL: 6,
+  COURSES: 7, PNAME: 8, PEMAIL: 9, PMOBILE: 10, HEARD: 11, REFERRER: 12, GOALS: 13, EMAILED: 14, NOTES: 15
 };
 const ST_INTERESTED = 'Interested';
 const ST_WAITLIST = 'Waitlist';
@@ -182,7 +182,6 @@ function doPost(e) {
     row[H.FIRST] = f.firstName;
     row[H.LAST] = f.lastName;
     row[H.YEAR] = f.year;
-    row[H.SMOBILE] = f.studentMobile;
     row[H.SCHOOL] = f.school;
     row[H.COURSES] = f.courses.join(', ');
     row[H.PNAME] = f.parentName;
@@ -238,7 +237,6 @@ function validate_(d) {
     firstName: str_(d.firstName, 60),
     lastName: str_(d.lastName, 60),
     year: str_(d.year, 20),
-    studentMobile: str_(d.studentMobile, 20),
     school: str_(d.school, 100),
     courses: [],
     parentName: str_(d.parentName, 100),
@@ -265,7 +263,6 @@ function validate_(d) {
   if (!clean.firstName) errors.firstName = 'Enter the student’s first name.';
   if (!clean.lastName) errors.lastName = 'Enter the student’s last name.';
   if (PROGRAM.years.indexOf(clean.year) === -1) errors.year = 'Choose a year level.';
-  if (clean.studentMobile && !phoneRe.test(clean.studentMobile)) errors.studentMobile = 'Enter a valid mobile number, or leave this blank.';
   if (!clean.school) errors.school = 'Enter the student’s school.';
   if (badCourse) errors.courses = 'Choose courses from the list.';
   else if (!clean.courses.length) errors.courses = 'Choose at least one course.';

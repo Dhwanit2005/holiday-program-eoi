@@ -296,11 +296,6 @@
             <input type="text" id="school" name="school" autocomplete="off" maxlength="100" required>
             <p class="err" id="err-school"></p>
           </div>
-          <div class="field">
-            <label for="studentMobile">Student’s mobile <span class="opt">(optional)</span></label>
-            <input type="tel" id="studentMobile" name="studentMobile" autocomplete="tel" inputmode="tel" maxlength="20">
-            <p class="err" id="err-studentMobile"></p>
-          </div>
         </div>
 
         <!-- Step 2 -->
@@ -400,7 +395,6 @@
     lastName: 'Enter the student’s last name.',
     year: 'Choose a year level.',
     school: 'Enter the student’s school.',
-    studentMobile: 'Enter a valid mobile number, or leave this blank.',
     courses: 'Choose at least one course.',
     parentName: 'Enter a parent or guardian’s name.',
     parentEmail: 'Enter a valid email address for the parent or guardian.',
@@ -408,7 +402,7 @@
     consent: 'Tick the box so we can contact the student and parent or guardian.'
   };
   var STEP_FIELDS = {
-    1: ['firstName', 'lastName', 'year', 'school', 'studentMobile'],
+    1: ['firstName', 'lastName', 'year', 'school'],
     2: ['courses'],
     3: ['parentName', 'parentEmail', 'parentMobile', 'consent']
   };
@@ -624,7 +618,7 @@
     var heard = v('heard');
     return {
       firstName: v('firstName'), lastName: v('lastName'), year: yearEl ? yearEl.value : '',
-      studentMobile: v('studentMobile'), school: v('school'),
+      school: v('school'),
       courses: courses,
       parentName: v('parentName'), parentEmail: v('parentEmail'), parentMobile: v('parentMobile'),
       heard: heard,
@@ -642,7 +636,6 @@
     if (!d.lastName) e.lastName = MSG.lastName;
     if (!d.year) e.year = MSG.year;
     if (!d.school) e.school = MSG.school;
-    if (d.studentMobile && !phoneRe.test(d.studentMobile)) e.studentMobile = MSG.studentMobile;
     if (!d.courses.length) e.courses = MSG.courses;
     if (!d.parentName) e.parentName = MSG.parentName;
     if (!emailRe.test(d.parentEmail)) e.parentEmail = MSG.parentEmail;
