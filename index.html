@@ -430,7 +430,7 @@
     referralOption: 'A friend referred me',
     heardOptions: ['A friend referred me', 'School', 'Social media', 'Other'],
     privacyNote: "We only use these details to contact you about this program. We don't share them with anyone else.",
-    contactName: 'Khush', contactPhone: '0426 846 426', capacity: 3, showPlaces: true, placesLeft: 3
+    contactName: 'Khush', contactPhone: '0426 846 426', capacity: 3, showPlaces: false, placesLeft: 3
   };
   var DEMO_PACK = [
     { title: 'Key details', facts: [{ label: 'When', value: 'Summer holidays (exact dates to be confirmed)' }, { label: 'Location', value: 'Marsden Park Community Centre' }] },
@@ -545,7 +545,8 @@
 
   function renderPlaces(p) {
     var n = $('places');
-    if (!p.showPlaces || p.placesLeft == null || !(p.capacity > 0)) { n.hidden = true; return; }
+    // We deliberately never show how many places are left, whatever the back end sends.
+    n.hidden = true; return;
     n.hidden = false;
     n.textContent = p.placesLeft > 0
       ? p.placesLeft + ' of ' + p.capacity + ' places left'
@@ -729,8 +730,7 @@
 
     var stamp = '';
     if (res.position) {
-      if (waitlist) stamp = 'Waitlist no. ' + res.position;
-      else stamp = res.capacity > 0 ? 'No. ' + res.position + ' of ' + res.capacity : 'No. ' + res.position;
+      if (waitlist) stamp = 'Waitlist no. ' + res.position; // never show a number for confirmed interest, so we don't reveal how many places are left
     }
     $('stamp').textContent = stamp;
     $('confirmMsg').textContent = res.message || '';

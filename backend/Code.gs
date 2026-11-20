@@ -19,7 +19,7 @@ const PROGRAM = {
   contactName: 'Khush',
   contactPhone: '0426 846 426',                      // shown on the page and in the pack for questions
   capacity: 20,                                    // TODO: places offered before the waitlist starts. 0 = no limit
-  showPlaces: true,                                // show "X of Y places left" on the page
+  showPlaces: false,                               // keep false so the page never shows how many places are left
 
   // Shown in the "key facts" list on the page and in the pack. Any text works.
   facts: [
@@ -46,6 +46,21 @@ const PROGRAM = {
     interested: "Your interest is registered. Places are confirmed once the dates are final, and we'll contact you then.", // TODO
     waitlist: "Places are full right now, so you're on the waitlist. We'll contact you if a place opens up." // TODO
   },
+
+  // Extra sections that go in the info pack EMAIL only (after "Key details"). Not shown on the web page.
+  emailOnly: [
+    {
+      title: 'Program format',
+      lines: [
+        '5-day program',
+        '2 hours per subject'
+      ]
+    },
+    {
+      title: 'Price',
+      lines: ['$40 per hour']
+    }
+  ],
 
   // The info pack. Each section can have: facts, lines (bullets) or steps (numbered).
   pack: [
@@ -360,8 +375,8 @@ function esc_(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function packHtml_() {
-  return PROGRAM.pack.map(function (s) {
+function packHtml_(sections) {
+  return sections.map(function (s) {
     let body = '';
     if (s.facts) {
       body += '<table role="presentation" style="border-collapse:collapse;width:100%">' + s.facts.map(function (x) {
@@ -383,8 +398,8 @@ function packHtml_() {
   }).join('');
 }
 
-function packText_() {
-  return PROGRAM.pack.map(function (s) {
+function packText_(sections) {
+  return sections.map(function (s) {
     const out = [s.title.toUpperCase()];
     (s.facts || []).forEach(function (x) { out.push(x.label + ': ' + x.value); });
     (s.lines || []).forEach(function (l) { out.push('- ' + l); });
@@ -396,18 +411,19 @@ function packText_() {
 function sendPack_(f, status, position) {
   if (MailApp.getRemainingDailyQuota() < 2) return false;
   const lead = status === ST_WAITLIST ? PROGRAM.messages.waitlist : PROGRAM.messages.interested;
-  const place = status === ST_WAITLIST ? 'Waitlist no. ' + position : 'Interest no. ' + position;
+  const place = status === ST_WAITLIST ? 'Waitlist no. ' + position : ''; // no number for confirmed interest, so we never reveal how many have signed up
+  const sections = PROGRAM.pack.slice(0, 1).concat(PROGRAM.emailOnly || [], PROGRAM.pack.slice(1));
   const html =
     '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#14213D;max-width:560px">' +
     '<h2 style="margin:0 0 4px;font-size:22px">' + esc_(PROGRAM.name) + '</h2>' +
-    '<p style="margin:0 0 16px;color:#46526B">' + esc_(place) + '</p>' +
+    (place ? '<p style="margin:0 0 16px;color:#46526B">' + esc_(place) + '</p>' : '') +
     '<p>Hi ' + esc_(f.firstName) + ',</p>' +
     '<p>' + esc_(lead) + '</p>' +
     '<p><strong>You registered for:</strong> ' + esc_(summary_(f.year, f.courses.join(', '))) + '</p>' +
-    '<p>Here is the info pack.</p>' + packHtml_() +
+    '<p>Here is the info pack.</p>' + packHtml_(sections) +
     '<p style="margin-top:28px">From ' + esc_(PROGRAM.organisers.join(' and ')) + '</p></div>';
   const text = 'Hi ' + f.firstName + ',\n\n' + lead + '\n\nYou registered for: ' +
-    summary_(f.year, f.courses.join(', ')) + '\n\nHere is the info pack.\n\n' + packText_() +
+    summary_(f.year, f.courses.join(', ')) + '\n\nHere is the info pack.\n\n' + packText_(sections) +
     '\n\nFrom ' + PROGRAM.organisers.join(' and ');
 
   const opts = {
