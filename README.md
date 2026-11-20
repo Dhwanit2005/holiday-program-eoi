@@ -16,7 +16,7 @@ Until you paste in the back end URL, `index.html` runs in preview mode with samp
 5. Pick `setup` in the function dropdown and press Run. Approve the permissions. Google will warn the app is unverified because you wrote it: choose Advanced, then Go to project. This creates the `Signups` tab.
 6. Deploy, then New deployment, type Web app. Execute as: Me. Who has access: Anyone. Copy the URL that ends in `/exec`.
 7. Open `index.html`, find `var API_URL = '';` and paste the URL between the quotes.
-8. Upload `index.html` to Netlify (or any static host).
+8. Publish `index.html`. GitHub Pages is set up: merge to `main` and the workflow in `.github/workflows/pages.yml` deploys it to `https://<your-username>.github.io/holiday-program-eoi/`. (Netlify or any static host also works.)
 9. Submit a test signup with your own email. Check the Sheet row and the email (including junk).
 
 After you edit `Code.gs` later, go to Deploy, Manage deployments, edit the deployment, choose New version. The URL stays the same.
