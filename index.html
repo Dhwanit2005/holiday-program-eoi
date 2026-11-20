@@ -415,7 +415,7 @@
   // ---- Preview data (only used when API_URL is empty) ----------------------
   var DEMO_PROGRAM = {
     name: 'Holiday Program',
-    organisers: ['Dhwanit', "[Friend's name]"],
+    organisers: ['Dhwanit', 'Khush'],
     facts: [
       { label: 'When', value: 'Summer holidays' },
       { label: 'Where', value: 'Marsden Park Community Centre' },
@@ -430,7 +430,7 @@
     referralOption: 'A friend referred me',
     heardOptions: ['A friend referred me', 'School', 'Social media', 'Other'],
     privacyNote: "We only use these details to contact you about this program. We don't share them with anyone else.",
-    contactEmail: 'hello@example.com', capacity: 3, showPlaces: true, placesLeft: 3
+    contactEmail: 'hello@example.com', contactName: 'Khush', contactPhone: '0426 846 426', capacity: 3, showPlaces: true, placesLeft: 3
   };
   var DEMO_PACK = [
     { title: 'Key details', facts: [{ label: 'When', value: 'Summer holidays (exact dates to be confirmed)' }, { label: 'Location', value: 'Marsden Park Community Centre' }] },
@@ -756,6 +756,22 @@
 
   $('printBtn').addEventListener('click', function () { window.print(); });
 
+  // "Call Khush on 0426 846 426 or email x@y." Builds links with DOM calls, no HTML parsing.
+  function fillContact(target, p, callLead, mailLead) {
+    target.textContent = '';
+    var hasPhone = !!p.contactPhone, hasMail = !!p.contactEmail;
+    if (!hasPhone && !hasMail) return;
+    if (hasPhone) {
+      target.appendChild(document.createTextNode(callLead + (p.contactName ? p.contactName + ' on ' : '')));
+      var t = el('a', p.contactPhone); t.href = 'tel:' + p.contactPhone.replace(/[^0-9+]/g, ''); target.appendChild(t);
+    }
+    if (hasMail) {
+      target.appendChild(document.createTextNode(hasPhone ? ', or ' + mailLead.toLowerCase() : mailLead));
+      var m = el('a', p.contactEmail); m.href = 'mailto:' + p.contactEmail; target.appendChild(m);
+    }
+    target.appendChild(document.createTextNode('.'));
+  }
+
   // ---- Boot ------------------------------------------------------------------
   function applyProgram(p) {
     program = p;
@@ -767,11 +783,8 @@
     fillSelect($('heard'), p.heardOptions || []);
     $('privacy').textContent = p.privacyNote || '';
     $('faqPrivacy').textContent = p.privacyNote || '';
-    if (p.contactEmail) {
-      var fc = $('faqContact'); fc.textContent = 'Email us at ';
-      var a = el('a', p.contactEmail); a.href = 'mailto:' + p.contactEmail; fc.appendChild(a); fc.appendChild(document.createTextNode('.'));
-      var by = $('contactLine'); by.textContent = 'Questions? Email '; var a2 = el('a', p.contactEmail); a2.href = 'mailto:' + p.contactEmail; by.appendChild(a2); by.appendChild(document.createTextNode('.'));
-    }
+    fillContact($('faqContact'), p, 'Call ', 'Email ');
+    fillContact($('contactLine'), p, 'Questions? Call ', 'email ');
     $('byline').textContent = p.organisers && p.organisers.length ? 'Run by ' + p.organisers.join(' and ') + '.' : '';
     renderPlaces(p);
   }

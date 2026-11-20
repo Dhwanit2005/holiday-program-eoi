@@ -14,8 +14,10 @@
 // ---------------------------------------------------------------------------
 const PROGRAM = {
   name: 'Holiday Program',                          // TODO: working title, replace with your name
-  organisers: ['Dhwanit', "[Friend's name]"],      // TODO: first names shown on the page
+  organisers: ['Dhwanit', 'Khush'],                 // first names shown on the page
   contactEmail: 'dhwanit2005@gmail.com',           // TODO: reply-to + contact in the pack (use a shared address if you have one)
+  contactName: 'Khush',
+  contactPhone: '0426 846 426',                      // shown on the page and in the pack for questions
   capacity: 20,                                    // TODO: places offered before the waitlist starts. 0 = no limit
   showPlaces: true,                                // show "X of Y places left" on the page
 
@@ -79,7 +81,7 @@ const PROGRAM = {
     },
     {
       title: 'Questions',
-      lines: ['Reply to this email or write to us at the address above.']
+      lines: ['Call Khush on 0426 846 426, reply to this email, or write to us at the address above.']
     }
   ]
 };
@@ -327,6 +329,8 @@ function publicProgram_(sh) {
     referralOption: PROGRAM.referralOption,
     privacyNote: PROGRAM.privacyNote,
     contactEmail: PROGRAM.contactEmail,
+    contactName: PROGRAM.contactName,
+    contactPhone: PROGRAM.contactPhone,
     capacity: PROGRAM.capacity,
     showPlaces: PROGRAM.showPlaces,
     placesLeft: placesLeft_(rows)
