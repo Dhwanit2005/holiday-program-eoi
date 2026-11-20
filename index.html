@@ -239,7 +239,7 @@
   <main id="main" data-state="form">
     <section class="intro noprint" aria-labelledby="title">
       <h1 id="title">Make the school holidays count.</h1>
-      <p class="lede">A small-group tutoring program for Year 11 and Year 12 students, run by two tutors. Parents and students can register in about three minutes. Registering is free and doesn't commit you to anything. We'll email the info pack straight away.</p>
+      <p class="lede">A small-group tutoring program for Year 11 and Year 12 students, run by two tutors. Parents and students can register in about three minutes. Registering doesn't commit you to anything. We'll email the info pack straight away.</p>
       <dl class="facts" id="facts"></dl>
       <p class="pen" id="places" hidden></p>
 
@@ -247,12 +247,12 @@
         <h2>How it works</h2>
         <ol class="how">
           <li><strong>Register your interest.</strong> Three short steps: the student, the courses, then a parent or guardian.</li>
-          <li><strong>Get the info pack.</strong> It's emailed to the student and the parent or guardian straight away, and shown on screen.</li>
-          <li><strong>We confirm the details.</strong> Once dates, location and fees are final, we contact you. You then decide whether to lock in a place.</li>
+          <li><strong>Get the info pack.</strong> It's emailed to the parent or guardian straight away, and shown on screen.</li>
+          <li><strong>We confirm the details.</strong> Once the dates are final, we contact you. You then decide whether to confirm a place.</li>
         </ol>
         <h2>Common questions</h2>
-        <details><summary>Does registering cost anything or commit us?</summary><p>No. This only tells us you're interested. No payment is taken on this page.</p></details>
-        <details><summary>Who should fill this in?</summary><p>Either the student or a parent or guardian. We need contact details for both, and we email both.</p></details>
+        <details><summary>Does registering commit us?</summary><p>No. This only tells us you're interested.</p></details>
+        <details><summary>Who should fill this in?</summary><p>Either the student or a parent or guardian. We email the info pack to the parent or guardian's address.</p></details>
         <details><summary>What if places are full?</summary><p>You'll be added to the waitlist and we'll contact you if a place opens up.</p></details>
         <details><summary>What do you do with our details?</summary><p id="faqPrivacy"></p></details>
         <details><summary>Who do I contact with questions?</summary><p id="faqContact">Reply to the info pack email once you receive it.</p></details>
@@ -297,11 +297,6 @@
             <p class="err" id="err-school"></p>
           </div>
           <div class="field">
-            <label for="studentEmail">Student’s email</label>
-            <input type="email" id="studentEmail" name="studentEmail" autocomplete="email" inputmode="email" maxlength="120" required>
-            <p class="err" id="err-studentEmail"></p>
-          </div>
-          <div class="field">
             <label for="studentMobile">Student’s mobile <span class="opt">(optional)</span></label>
             <input type="tel" id="studentMobile" name="studentMobile" autocomplete="tel" inputmode="tel" maxlength="20">
             <p class="err" id="err-studentMobile"></p>
@@ -319,7 +314,7 @@
         <!-- Step 3 -->
         <div class="panel" data-panel="3" hidden>
           <h3 tabindex="-1">Parent or guardian</h3>
-          <p class="hint">We email the info pack to you and the student. Nothing is charged today.</p>
+          <p class="hint">We email the info pack to this address.</p>
           <div class="field">
             <label for="parentName">Name</label>
             <input type="text" id="parentName" name="parentName" autocomplete="off" maxlength="100" required>
@@ -405,7 +400,6 @@
     lastName: 'Enter the student’s last name.',
     year: 'Choose a year level.',
     school: 'Enter the student’s school.',
-    studentEmail: 'Enter a valid email address, like name@example.com.',
     studentMobile: 'Enter a valid mobile number, or leave this blank.',
     courses: 'Choose at least one course.',
     parentName: 'Enter a parent or guardian’s name.',
@@ -414,7 +408,7 @@
     consent: 'Tick the box so we can contact the student and parent or guardian.'
   };
   var STEP_FIELDS = {
-    1: ['firstName', 'lastName', 'year', 'school', 'studentEmail', 'studentMobile'],
+    1: ['firstName', 'lastName', 'year', 'school', 'studentMobile'],
     2: ['courses'],
     3: ['parentName', 'parentEmail', 'parentMobile', 'consent']
   };
@@ -429,9 +423,8 @@
     name: 'Holiday Program',
     organisers: ['Dhwanit', "[Friend's name]"],
     facts: [
-      { label: 'When', value: 'Dates to be confirmed' },
-      { label: 'Where', value: 'Location to be confirmed' },
-      { label: 'Cost', value: 'Price to be confirmed' },
+      { label: 'When', value: 'Summer holidays' },
+      { label: 'Where', value: 'Marsden Park Community Centre' },
       { label: 'Group size', value: 'Small groups' }
     ],
     years: ['Year 11', 'Year 12'],
@@ -446,10 +439,10 @@
     contactEmail: 'hello@example.com', capacity: 3, showPlaces: true, placesLeft: 3
   };
   var DEMO_PACK = [
-    { title: 'Key details', facts: [{ label: 'Dates and times', value: 'To be confirmed' }, { label: 'Location', value: 'To be confirmed' }, { label: 'Cost', value: 'To be confirmed' }] },
+    { title: 'Key details', facts: [{ label: 'When', value: 'Summer holidays (exact dates to be confirmed)' }, { label: 'Location', value: 'Marsden Park Community Centre' }] },
     { title: 'What we will cover', lines: ['Topics are still being finalised. We will build the plan around what the group tells us it wants help with.', 'Sessions are small-group, so every student gets time to ask questions.'] },
     { title: 'What to bring', lines: ['A calculator approved for NESA exams', 'Your notes or workbooks', 'Pens, a notepad and a water bottle'] },
-    { title: 'What happens next', steps: ['Keep an eye on your email (and check junk) for updates.', 'We confirm dates, location and fees, then contact the student and parent or guardian.', 'You confirm your place and pay to lock it in.'] }
+    { title: 'What happens next', steps: ['Keep an eye on your email (and check junk) for updates.', 'We confirm the dates, then contact the parent or guardian.', 'You confirm your place.'] }
   ];
   var demoRows = [];
 
@@ -467,7 +460,7 @@
     if (DEMO) {
       return new Promise(function (resolve) {
         setTimeout(function () {
-          var email = payload.studentEmail.toLowerCase();
+          var email = (payload.parentEmail + '|' + payload.firstName).toLowerCase();
           var dupe = demoRows.filter(function (r) { return r.email === email; })[0];
           var interested = demoRows.filter(function (r) { return r.status === 'Interested'; }).length;
           var waitlisted = demoRows.length - interested;
@@ -485,7 +478,7 @@
             alreadyRegistered: already, emailSent: !already, firstName: payload.firstName, summary: summary,
             message: status === 'Waitlist'
               ? "Places are full right now, so you're on the waitlist. We'll contact you if a place opens up."
-              : "Your interest is registered. Places are confirmed once the dates and fees are final, and we'll contact you then.",
+              : "Your interest is registered. Places are confirmed once the dates are final, and we'll contact you then.",
             pack: DEMO_PACK
           });
         }, 700);
@@ -631,7 +624,7 @@
     var heard = v('heard');
     return {
       firstName: v('firstName'), lastName: v('lastName'), year: yearEl ? yearEl.value : '',
-      studentEmail: v('studentEmail'), studentMobile: v('studentMobile'), school: v('school'),
+      studentMobile: v('studentMobile'), school: v('school'),
       courses: courses,
       parentName: v('parentName'), parentEmail: v('parentEmail'), parentMobile: v('parentMobile'),
       heard: heard,
@@ -649,7 +642,6 @@
     if (!d.lastName) e.lastName = MSG.lastName;
     if (!d.year) e.year = MSG.year;
     if (!d.school) e.school = MSG.school;
-    if (!emailRe.test(d.studentEmail)) e.studentEmail = MSG.studentEmail;
     if (d.studentMobile && !phoneRe.test(d.studentMobile)) e.studentMobile = MSG.studentMobile;
     if (!d.courses.length) e.courses = MSG.courses;
     if (!d.parentName) e.parentName = MSG.parentName;
@@ -753,7 +745,7 @@
 
     var note;
     if (res.alreadyRegistered) note = 'This email is already registered, so we haven’t sent another one. The pack is below.';
-    else if (res.emailSent) note = 'We’ve emailed the pack to the student and the parent or guardian. It’s also below.';
+    else if (res.emailSent) note = 'We’ve emailed the pack to the parent or guardian. It’s also below.';
     else note = 'We couldn’t email the pack. It’s below, and you can print or save it.';
     $('confirmNote').textContent = note;
 

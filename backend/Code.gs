@@ -21,10 +21,9 @@ const PROGRAM = {
 
   // Shown in the "key facts" list on the page and in the pack. Any text works.
   facts: [
-    { label: 'When',       value: 'Dates to be confirmed' },        // TODO
-    { label: 'Where',      value: 'Location to be confirmed' },     // TODO
-    { label: 'Cost',       value: 'Price to be confirmed' },        // TODO
-    { label: 'Group size', value: 'Small groups' }                  // TODO e.g. "Up to 4 per group"
+    { label: 'When',       value: 'Summer holidays' },
+    { label: 'Where',      value: 'Marsden Park Community Centre' },
+    { label: 'Group size', value: 'Small groups' }
   ],
 
   // Form options. Students tick every course they want help with.
@@ -42,7 +41,7 @@ const PROGRAM = {
 
   // Shown on the confirmation screen and in the email.
   messages: {
-    interested: "Your interest is registered. Places are confirmed once the dates and fees are final, and we'll contact you then.", // TODO
+    interested: "Your interest is registered. Places are confirmed once the dates are final, and we'll contact you then.", // TODO
     waitlist: "Places are full right now, so you're on the waitlist. We'll contact you if a place opens up." // TODO
   },
 
@@ -51,9 +50,8 @@ const PROGRAM = {
     {
       title: 'Key details',
       facts: [
-        { label: 'Dates and times', value: 'To be confirmed' },     // TODO
-        { label: 'Location',       value: 'To be confirmed' },     // TODO
-        { label: 'Cost',           value: 'To be confirmed' }      // TODO
+        { label: 'When',     value: 'Summer holidays (exact dates to be confirmed)' },
+        { label: 'Location', value: 'Marsden Park Community Centre' }
       ]
     },
     {
@@ -61,12 +59,6 @@ const PROGRAM = {
       lines: [
         'Topics are still being finalised. We will build the plan around what the group tells us it wants help with.', // TODO
         'Sessions are small-group, so every student gets time to ask questions.' // TODO check
-      ]
-    },
-    {
-      title: 'Cost and payment',
-      lines: [
-        'Fees and payment details will be sent when dates are confirmed.' // TODO
       ]
     },
     {
@@ -81,8 +73,8 @@ const PROGRAM = {
       title: 'What happens next',
       steps: [
         'Keep an eye on your email (and check junk) for updates.',
-        'We confirm dates, location and fees, then contact the student and parent or guardian.',
-        'You confirm your place and pay to lock it in.' // TODO adjust to your real process
+        'We confirm the dates, then contact the parent or guardian.',
+        'You confirm your place.' // TODO adjust to your real process
       ]
     },
     {
@@ -103,13 +95,13 @@ const TZ = 'Australia/Sydney';
 const MIN_FILL_MS = 3000; // faster than this = probably a bot
 
 const HEADERS = [
-  'Timestamp', 'Status', 'Position', 'First name', 'Last name', 'Year', 'Student email',
+  'Timestamp', 'Status', 'Position', 'First name', 'Last name', 'Year',
   'Student mobile', 'School', 'Courses', 'Parent/guardian name', 'Parent/guardian email',
   'Parent/guardian mobile', 'Heard about us', 'Referred by', 'Anything else', 'Info pack emailed', 'Notes'
 ];
 const H = {
-  TS: 0, STATUS: 1, POS: 2, FIRST: 3, LAST: 4, YEAR: 5, SEMAIL: 6, SMOBILE: 7, SCHOOL: 8,
-  COURSES: 9, PNAME: 10, PEMAIL: 11, PMOBILE: 12, HEARD: 13, REFERRER: 14, GOALS: 15, EMAILED: 16, NOTES: 17
+  TS: 0, STATUS: 1, POS: 2, FIRST: 3, LAST: 4, YEAR: 5, SMOBILE: 6, SCHOOL: 7,
+  COURSES: 8, PNAME: 9, PEMAIL: 10, PMOBILE: 11, HEARD: 12, REFERRER: 13, GOALS: 14, EMAILED: 15, NOTES: 16
 };
 const ST_INTERESTED = 'Interested';
 const ST_WAITLIST = 'Waitlist';
@@ -162,7 +154,7 @@ function doPost(e) {
     rows = readRows_(sheet);
 
     existing = rows.filter(function (r) {
-      return r.v[H.STATUS] !== 'Withdrawn' && String(r.v[H.SEMAIL]).toLowerCase() === f.studentEmail;
+      return r.v[H.STATUS] !== 'Withdrawn' && String(r.v[H.PEMAIL]).toLowerCase() === f.parentEmail && String(r.v[H.FIRST]).toLowerCase() === f.firstName.toLowerCase();
     })[0];
     if (existing) {
       return json_(buildResponse_({
@@ -190,7 +182,6 @@ function doPost(e) {
     row[H.FIRST] = f.firstName;
     row[H.LAST] = f.lastName;
     row[H.YEAR] = f.year;
-    row[H.SEMAIL] = f.studentEmail;
     row[H.SMOBILE] = f.studentMobile;
     row[H.SCHOOL] = f.school;
     row[H.COURSES] = f.courses.join(', ');
@@ -247,7 +238,6 @@ function validate_(d) {
     firstName: str_(d.firstName, 60),
     lastName: str_(d.lastName, 60),
     year: str_(d.year, 20),
-    studentEmail: str_(d.studentEmail, 120).toLowerCase(),
     studentMobile: str_(d.studentMobile, 20),
     school: str_(d.school, 100),
     courses: [],
@@ -275,7 +265,6 @@ function validate_(d) {
   if (!clean.firstName) errors.firstName = 'Enter the student’s first name.';
   if (!clean.lastName) errors.lastName = 'Enter the student’s last name.';
   if (PROGRAM.years.indexOf(clean.year) === -1) errors.year = 'Choose a year level.';
-  if (!emailRe.test(clean.studentEmail)) errors.studentEmail = 'Enter a valid email address, like name@example.com.';
   if (clean.studentMobile && !phoneRe.test(clean.studentMobile)) errors.studentMobile = 'Enter a valid mobile number, or leave this blank.';
   if (!clean.school) errors.school = 'Enter the student’s school.';
   if (badCourse) errors.courses = 'Choose courses from the list.';
@@ -422,14 +411,13 @@ function sendPack_(f, status, position) {
     '\n\nFrom ' + PROGRAM.organisers.join(' and ');
 
   const opts = {
-    to: f.studentEmail,
+    to: f.parentEmail,
     subject: PROGRAM.name + ': your info pack',
     body: text,
     htmlBody: html,
     name: PROGRAM.name,
     replyTo: PROGRAM.contactEmail
   };
-  if (f.parentEmail && f.parentEmail !== f.studentEmail) opts.cc = f.parentEmail;
   MailApp.sendEmail(opts);
   return true;
 }
@@ -441,7 +429,7 @@ function notifyOrganisers_(f, status, position) {
       NOTIFY_EMAILS.join(','),
       'New signup: ' + f.firstName + ' ' + f.lastName + ' (' + status + ' ' + position + ')',
       f.firstName + ' ' + f.lastName + ', ' + f.school + '\n' + summary_(f.year, f.courses.join(', ')) +
-      '\nStudent: ' + f.studentEmail + '\nParent: ' + f.parentName + ', ' + f.parentEmail +
+      '\nParent: ' + f.parentName + ', ' + f.parentEmail +
       (f.referrer ? '\nReferred by: ' + f.referrer : '')
     );
   } catch (err) {

@@ -3,7 +3,7 @@
 Two files do everything:
 
 - `index.html`: the sign-up page. Host it anywhere static (Netlify drag-and-drop works).
-- `backend/Code.gs`: a Google Apps Script web app. It saves each signup to a Google Sheet, assigns a place or waitlist position, and emails the info pack to the student with the parent or guardian copied.
+- `backend/Code.gs`: a Google Apps Script web app. It saves each signup to a Google Sheet, assigns a place or waitlist position, and emails the info pack to the parent or guardian.
 
 Until you paste in the back end URL, `index.html` runs in preview mode with sample data (capacity 3, so you can see the waitlist after three signups).
 
@@ -29,7 +29,7 @@ In `Code.gs`, search for `TODO`:
 - `organisers`: your friend's name is a placeholder.
 - `contactEmail`: pre-filled with your Gmail. It is the reply-to address, appears in the pack, and is shown publicly on the page as the contact for parents' questions. Use a shared or dedicated address if you'd rather not publish a personal one.
 - `capacity`: set to 20. Signups past this go on the waitlist. Use 0 for no limit.
-- `facts`: dates, location, cost, group size.
+- `facts`: dates, location, group size.
 - `years`, `courses`: the year level and course options (English, Mathematics, Science). `referralOption` is the "how did you hear" choice that asks who referred them.
 - `messages`, `pack`, `privacyNote`: wording for the confirmation screen, the email and the page footer. Check the privacy line matches what you actually do with the data.
 - `NOTIFY_EMAILS`: add your addresses to get an email on every signup.
@@ -39,9 +39,9 @@ In `index.html`, the headline, intro paragraph, "How it works" steps and "Common
 ## How it behaves
 
 - Status is `Interested` until `capacity` is reached, then `Waitlist`. The page shows "X of Y places left" and the confirmation shows their number.
-- The same student email twice returns their existing place and does not send a second email.
+- The same parent email and student first name twice returns the existing place and does not send a second email.
 - To free a place, type `Withdrawn` in the Status column. Don't delete rows, because positions are counted from the Status column.
 - If the email fails (for example the daily quota is used up), the signup is still saved. The row shows `No` under "Info pack emailed" and the reason under Notes.
 - Spam protection: a hidden field and a minimum fill time. Bots get a fake success and nothing is stored.
 - Cells are stored as plain text, so nothing typed into the form can run as a spreadsheet formula.
-- Free Gmail accounts can send about 100 emails a day, counted per recipient. Each signup emails two people (student and parent), so expect roughly 50 signups a day before sending stops.
+- Free Gmail accounts can send about 100 emails a day, counted per recipient. Each signup emails one person (the parent or guardian), so expect roughly 100 signups a day before sending stops.
