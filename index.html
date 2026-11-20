@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F6F8FB">
+<title>Holiday tutoring program: register your interest</title>
+<meta name="description" content="Register your interest in a small-group Year 11 and 12 holiday tutoring program and get the info pack straight away.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F8FB;
+    --grid: #DDE4EE;
+    --ink: #14213D;
+    --ink-soft: #46526B;
+    --pen: #D7322B;
+    --pen-text: #B3261E;
+    --hl: #FFE66D;
+    --blue: #2B4AD8;
+    --white: #FFFFFF;
+    --rule: #9AA6BC;
+    --margin: clamp(14px, 6vw, 72px);
+    --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-pen: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    min-height: 100vh;
+  }
+  /* The double red margin line of an exercise book */
+  body::before {
+    content: "";
+    position: fixed; top: 0; bottom: 0; left: var(--margin);
+    width: 6px;
+    background: linear-gradient(90deg, var(--pen) 0 1.5px, transparent 1.5px 4.5px, var(--pen) 4.5px 6px);
+    opacity: .75;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .page {
+    position: relative; z-index: 1;
+    padding: 0 1.25rem 4rem calc(var(--margin) + 1.5rem);
+    max-width: 78rem;
+  }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .demo-banner {
+    position: relative; z-index: 2;
+    background: var(--hl); color: var(--ink);
+    padding: .5rem 1rem .5rem calc(var(--margin) + 1.5rem);
+    font-size: .95rem;
+  }
+
+  header.top { padding: 1.75rem 0 0; }
+  .wordmark { font-weight: 800; font-size: 1.25rem; letter-spacing: -.01em; }
+
+  main { display: grid; gap: 3rem; padding-top: 2.5rem; }
+  @media (min-width: 62rem) {
+    main[data-state="form"] { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 5rem; align-items: start; padding-top: 4rem; }
+  }
+  main[data-state="done"] .intro, main[data-state="done"] #formSection { display: none; }
+  main[data-state="form"] #confirm { display: none; }
+
+  h1 {
+    margin: 0 0 1.25rem;
+    font-size: clamp(2.5rem, 8.2vw, 5.25rem);
+    line-height: .98;
+    font-weight: 800;
+    font-stretch: 82%;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+  }
+  .lede { max-width: 34rem; margin: 0 0 2rem; font-size: 1.2rem; }
+
+  /* Key facts, laid out like marks on an exam paper */
+  .facts { margin: 0 0 1.5rem; max-width: 34rem; }
+  .facts > div { display: flex; align-items: baseline; gap: .5rem; padding: .35rem 0; }
+  .facts dt { display: flex; flex: 1; align-items: baseline; margin: 0; color: var(--ink-soft); }
+  .facts dt::after { content: ""; flex: 1; margin: 0 .25rem; border-bottom: 2px dotted var(--rule); transform: translateY(-.3em); }
+  .facts dd { margin: 0; font-weight: 600; text-align: right; background: linear-gradient(transparent 52%, var(--hl) 52% 92%, transparent 92%); padding: 0 .25rem; }
+
+  .explain { max-width: 34rem; margin-top: 2.25rem; }
+  .explain h2 { margin: 0 0 .75rem; font-size: 1.25rem; font-weight: 800; letter-spacing: -.01em; }
+  .how { margin: 0 0 2rem; padding-left: 1.3rem; }
+  .how li { margin: .5rem 0; }
+  details { border-top: 1px solid var(--rule); padding: .65rem 0; }
+  details:last-child { border-bottom: 1px solid var(--rule); }
+  summary { cursor: pointer; font-weight: 600; min-height: 1.75rem; }
+  summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  details p { margin: .5rem 0 .25rem; color: var(--ink-soft); }
+  .pen { font-family: var(--font-pen); font-weight: 700; color: var(--pen-text); font-size: 1.7rem; line-height: 1.1; margin: 0; }
+  #places { transform: rotate(-2deg); transform-origin: left center; margin-top: .75rem; }
+
+  /* The answer sheet */
+  .sheet { background: var(--white); border: 1px solid #C5CEDD; padding: 1.5rem 1.25rem 1.75rem; }
+  @media (min-width: 40rem) { .sheet { padding: 2rem 2rem 2.25rem; } }
+  .sheet h2 { margin: 0 0 1.25rem; font-size: 1.6rem; line-height: 1.15; letter-spacing: -.02em; font-weight: 800; }
+
+  /* Progress: three ruled lines that turn red as each step is marked off */
+  .steps { display: flex; gap: .5rem; list-style: none; margin: 0 0 1.75rem; padding: 0; }
+  .steps li { flex: 1; border-top: 5px solid var(--grid); padding-top: .4rem; font-size: .9rem; line-height: 1.25; color: var(--ink-soft); }
+  .steps li .n { font-weight: 700; margin-right: .3rem; }
+  .steps li.current { border-top-color: var(--ink); color: var(--ink); font-weight: 700; }
+  .steps li.done { border-top-color: var(--pen); color: var(--ink); }
+  .steps li.done .n::before { content: "\2713\00a0"; color: var(--pen-text); }
+
+  .panel h3 { margin: 0 0 1.1rem; font-size: 1.25rem; letter-spacing: -.01em; font-weight: 800; outline: none; }
+  .panel .hint { margin: -.6rem 0 1.1rem; color: var(--ink-soft); }
+  fieldset { border: 0; padding: 0; margin: 0 0 1.4rem; min-width: 0; }
+  legend { padding: 0; font-weight: 700; font-size: 1rem; margin-bottom: .6rem; }
+  .field { margin-bottom: 1.1rem; }
+  .row { display: grid; gap: 0 1.25rem; }
+  @media (min-width: 34rem) { .row.two { grid-template-columns: 1fr 1fr; } }
+  label { display: block; font-size: .95rem; color: var(--ink-soft); margin-bottom: .1rem; }
+  label .opt { color: var(--ink-soft); }
+  input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+    width: 100%;
+    font: inherit; color: var(--ink);
+    background: transparent;
+    border: 0; border-bottom: 2px solid var(--ink);
+    border-radius: 0;
+    padding: .5rem .1rem;
+    min-height: 2.6rem;
+  }
+  textarea { resize: vertical; min-height: 5.5rem; line-height: 1.4; }
+  select {
+    appearance: none; -webkit-appearance: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2314213D' stroke-width='2'/%3E%3C/svg%3E") no-repeat right .25rem center / 12px 8px;
+    padding-right: 1.75rem;
+  }
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--blue); outline-offset: 2px; background: #F1F4FF;
+  }
+  [aria-invalid="true"] { border-bottom-color: var(--pen-text); }
+  .err { margin: .35rem 0 0; font-size: .92rem; color: var(--pen-text); font-weight: 600; }
+  .err:empty { display: none; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* Tap targets for year and courses. Selected ones get highlighter. */
+  .pills { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .pill {
+    display: flex; align-items: center; gap: .6rem;
+    border: 2px solid var(--ink); border-radius: 4px;
+    padding: .55rem .9rem; min-height: 3rem;
+    cursor: pointer; color: var(--ink); font-size: 1rem; margin: 0;
+  }
+  .pill input { width: 1.2rem; height: 1.2rem; margin: 0; flex: none; accent-color: var(--ink); }
+  .pill:has(input:checked) { background: var(--hl); font-weight: 600; }
+  .pill:has(input:focus-visible) { outline: 3px solid var(--blue); outline-offset: 2px; }
+  .subject { margin-bottom: 1.25rem; }
+
+  .check { display: flex; gap: .75rem; align-items: flex-start; margin: 1.25rem 0 .25rem; }
+  .check input { width: 1.4rem; height: 1.4rem; margin: .15rem 0 0; flex: none; accent-color: var(--ink); }
+  .check label { margin: 0; color: var(--ink); font-size: 1rem; }
+  .check input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  button, .btn {
+    font: inherit; font-weight: 700; cursor: pointer;
+    border: 2px solid var(--ink); border-radius: 4px;
+    background: var(--ink); color: var(--paper);
+    min-height: 3.25rem; padding: .6rem 1.6rem;
+  }
+  button:hover { background: var(--blue); border-color: var(--blue); }
+  button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  button[disabled] { opacity: .6; cursor: progress; }
+  button.ghost { background: transparent; color: var(--ink); }
+  button.ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .nav { display: flex; gap: .75rem; margin-top: 1.75rem; }
+  .nav button { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .nav #nextBtn { flex: 1 1 auto; white-space: nowrap; }
+  @media (min-width: 40rem) { .nav #nextBtn { flex: 0 0 auto; min-width: 11rem; } }
+  .form-error { margin: 1rem 0 0; color: var(--pen-text); font-weight: 600; }
+  .form-error:empty { display: none; }
+  .privacy { margin: 1rem 0 0; font-size: .92rem; color: var(--ink-soft); max-width: 32rem; }
+
+  /* Confirmation, marked in red pen */
+  .confirm { max-width: 46rem; outline: none; }
+  .mark { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1rem; min-height: 4.5rem; }
+  .mark svg { width: 4.5rem; height: 4.5rem; flex: none; overflow: visible; }
+  .mark path { fill: none; stroke: var(--pen); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 120; stroke-dashoffset: 0; }
+  .confirm.animate .mark path { animation: draw .6s ease-out both; }
+  @keyframes draw { from { stroke-dashoffset: 120; } to { stroke-dashoffset: 0; } }
+  .stamp { transform: rotate(-3deg); font-size: 2.4rem; }
+  .confirm h2 { margin: 0 0 .75rem; font-size: clamp(2rem, 5.5vw, 3.2rem); line-height: 1.02; letter-spacing: -.03em; font-weight: 800; font-stretch: 85%; }
+  .confirm .msg { max-width: 36rem; margin: 0 0 .75rem; font-size: 1.15rem; }
+  .confirm .summary { max-width: 36rem; margin: 0 0 .5rem; font-weight: 600; }
+  .confirm .note { max-width: 36rem; color: var(--ink-soft); margin: 0 0 1.5rem; }
+  .actions { margin: 0 0 2.5rem; }
+
+  .pack { background: var(--white); border: 1px solid #C5CEDD; padding: 1.5rem 1.25rem 2rem; }
+  @media (min-width: 40rem) { .pack { padding: 2.25rem 2.5rem 2.5rem; } }
+  .pack > h3 { margin: 0 0 .25rem; font-size: 1.5rem; letter-spacing: -.02em; font-weight: 800; }
+  .pack section { margin-top: 1.75rem; }
+  .pack h4 { margin: 0 0 .5rem; font-size: 1.1rem; font-weight: 700; }
+  .pack ul, .pack ol { margin: 0; padding-left: 1.3rem; max-width: 38rem; }
+  .pack li { margin: .35rem 0; }
+  .pack .facts { max-width: 38rem; margin: 0; }
+
+  footer { margin-top: 3.5rem; padding-top: 1rem; max-width: 34rem; color: var(--ink-soft); font-size: .95rem; }
+  footer p { margin: 0 0 .4rem; }
+
+  noscript p { background: var(--hl); padding: 1rem; margin: 1rem 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .confirm.animate .mark path { animation: none; }
+    * { transition: none !important; }
+  }
+  @media print {
+    body { background: #fff; }
+    body::before, .noprint { display: none !important; }
+    .page { padding: 0; }
+    main[data-state="done"] { display: block; }
+    .pack { border: 0; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="demo-banner noprint" id="demoBanner" hidden>Preview mode: nothing you enter is saved or emailed. Connect the back end to go live.</div>
+
+<div class="page">
+  <header class="top noprint"><span class="wordmark" id="brand"></span></header>
+
+  <noscript><p>This form needs JavaScript. Turn it on in your browser settings and reload the page.</p></noscript>
+
+  <main id="main" data-state="form">
+    <section class="intro noprint" aria-labelledby="title">
+      <h1 id="title">Make the school holidays count.</h1>
+      <p class="lede">A small-group tutoring program for Year 11 and Year 12 students, run by two tutors. Parents and students can register in about three minutes. Registering is free and doesn't commit you to anything. We'll email the info pack straight away.</p>
+      <dl class="facts" id="facts"></dl>
+      <p class="pen" id="places" hidden></p>
+
+      <div class="explain">
+        <h2>How it works</h2>
+        <ol class="how">
+          <li><strong>Register your interest.</strong> Three short steps: the student, the courses, then a parent or guardian.</li>
+          <li><strong>Get the info pack.</strong> It's emailed to the student and the parent or guardian straight away, and shown on screen.</li>
+          <li><strong>We confirm the details.</strong> Once dates, location and fees are final, we contact you. You then decide whether to lock in a place.</li>
+        </ol>
+        <h2>Common questions</h2>
+        <details><summary>Does registering cost anything or commit us?</summary><p>No. This only tells us you're interested. No payment is taken on this page.</p></details>
+        <details><summary>Who should fill this in?</summary><p>Either the student or a parent or guardian. We need contact details for both, and we email both.</p></details>
+        <details><summary>What if places are full?</summary><p>You'll be added to the waitlist and we'll contact you if a place opens up.</p></details>
+        <details><summary>What do you do with our details?</summary><p id="faqPrivacy"></p></details>
+        <details><summary>Who do I contact with questions?</summary><p id="faqContact">Reply to the info pack email once you receive it.</p></details>
+      </div>
+    </section>
+
+    <section id="formSection" class="noprint" aria-labelledby="formTitle">
+      <form id="form" class="sheet" novalidate>
+        <h2 id="formTitle">Register your interest</h2>
+
+        <ol class="steps" id="steps" aria-label="Progress">
+          <li class="current" aria-current="step"><span class="n">1</span>Student</li>
+          <li><span class="n">2</span>Courses</li>
+          <li><span class="n">3</span>Parent or guardian</li>
+        </ol>
+        <p class="sr-only" id="stepAnnounce" aria-live="polite"></p>
+
+        <!-- Step 1 -->
+        <div class="panel" data-panel="1">
+          <h3 tabindex="-1">About the student</h3>
+          <p class="hint">Details of the student who would attend.</p>
+          <div class="row two">
+            <div class="field">
+              <label for="firstName">Student’s first name</label>
+              <input type="text" id="firstName" name="firstName" autocomplete="given-name" maxlength="60" required>
+              <p class="err" id="err-firstName"></p>
+            </div>
+            <div class="field">
+              <label for="lastName">Student’s last name</label>
+              <input type="text" id="lastName" name="lastName" autocomplete="family-name" maxlength="60" required>
+              <p class="err" id="err-lastName"></p>
+            </div>
+          </div>
+          <fieldset aria-describedby="err-year">
+            <legend>Year level <span class="opt" style="font-weight:400;color:var(--ink-soft)">(the year the student will be in when the program runs)</span></legend>
+            <div class="pills" id="yearPills"></div>
+            <p class="err" id="err-year"></p>
+          </fieldset>
+          <div class="field">
+            <label for="school">Student’s school</label>
+            <input type="text" id="school" name="school" autocomplete="off" maxlength="100" required>
+            <p class="err" id="err-school"></p>
+          </div>
+          <div class="field">
+            <label for="studentEmail">Student’s email</label>
+            <input type="email" id="studentEmail" name="studentEmail" autocomplete="email" inputmode="email" maxlength="120" required>
+            <p class="err" id="err-studentEmail"></p>
+          </div>
+          <div class="field">
+            <label for="studentMobile">Student’s mobile <span class="opt">(optional)</span></label>
+            <input type="tel" id="studentMobile" name="studentMobile" autocomplete="tel" inputmode="tel" maxlength="20">
+            <p class="err" id="err-studentMobile"></p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="panel" data-panel="2" hidden>
+          <h3 tabindex="-1">Courses</h3>
+          <p class="hint">Tick every course the student would like help with. You can choose more than one.</p>
+          <div id="courseGroups"></div>
+          <p class="err" id="err-courses"></p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="panel" data-panel="3" hidden>
+          <h3 tabindex="-1">Parent or guardian</h3>
+          <p class="hint">We email the info pack to you and the student. Nothing is charged today.</p>
+          <div class="field">
+            <label for="parentName">Name</label>
+            <input type="text" id="parentName" name="parentName" autocomplete="off" maxlength="100" required>
+            <p class="err" id="err-parentName"></p>
+          </div>
+          <div class="field">
+            <label for="parentEmail">Email</label>
+            <input type="email" id="parentEmail" name="parentEmail" autocomplete="off" inputmode="email" maxlength="120" required>
+            <p class="err" id="err-parentEmail"></p>
+          </div>
+          <div class="field">
+            <label for="parentMobile">Mobile <span class="opt">(optional)</span></label>
+            <input type="tel" id="parentMobile" name="parentMobile" autocomplete="off" inputmode="tel" maxlength="20">
+            <p class="err" id="err-parentMobile"></p>
+          </div>
+
+          <div class="field">
+            <label for="heard">How did you hear about this? <span class="opt">(optional)</span></label>
+            <select id="heard" name="heard"><option value="">Choose one</option></select>
+          </div>
+          <div class="field" id="referrerField" hidden>
+            <label for="referrer">Who referred you? <span class="opt">(optional)</span></label>
+            <input type="text" id="referrer" name="referrer" autocomplete="off" maxlength="100">
+          </div>
+          <div class="field">
+            <label for="goals">Anything else we should know? <span class="opt">(optional)</span></label>
+            <textarea id="goals" name="goals" maxlength="500"></textarea>
+          </div>
+
+          <div class="hp" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="check">
+            <input type="checkbox" id="consent" name="consent" aria-describedby="err-consent">
+            <label for="consent">You can contact the student and their parent or guardian about this program.</label>
+          </div>
+          <p class="err" id="err-consent"></p>
+        </div>
+
+        <div class="nav">
+          <button type="button" class="ghost" id="backBtn" hidden>Back</button>
+          <button type="submit" id="nextBtn">Next</button>
+        </div>
+        <p class="form-error" id="formError" role="alert"></p>
+        <p class="privacy" id="privacy"></p>
+      </form>
+    </section>
+
+    <section id="confirm" class="confirm" tabindex="-1" aria-labelledby="confirmTitle">
+      <div class="mark noprint">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 34 L23 53 L58 8"/></svg>
+        <p class="pen stamp" id="stamp"></p>
+      </div>
+      <h2 id="confirmTitle" class="noprint"></h2>
+      <p class="msg noprint" id="confirmMsg"></p>
+      <p class="summary noprint" id="confirmSummary"></p>
+      <p class="note noprint" id="confirmNote"></p>
+      <p class="actions noprint"><button type="button" class="ghost" id="printBtn">Print or save the pack</button></p>
+      <article class="pack" id="pack" aria-label="Info pack"></article>
+    </section>
+  </main>
+
+  <footer class="noprint">
+    <p id="byline"></p>
+    <p id="contactLine"></p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // TODO: after deploying the Apps Script, paste its web app URL here (ends in /exec).
+  // While this is empty the page runs in preview mode with sample data.
+  var API_URL = '';
+  var DEMO = !API_URL;
+  var loadedAt = Date.now();
+
+  var MSG = {
+    firstName: 'Enter the student’s first name.',
+    lastName: 'Enter the student’s last name.',
+    year: 'Choose a year level.',
+    school: 'Enter the student’s school.',
+    studentEmail: 'Enter a valid email address, like name@example.com.',
+    studentMobile: 'Enter a valid mobile number, or leave this blank.',
+    courses: 'Choose at least one course.',
+    parentName: 'Enter a parent or guardian’s name.',
+    parentEmail: 'Enter a valid email address for the parent or guardian.',
+    parentMobile: 'Enter a valid mobile number, or leave this blank.',
+    consent: 'Tick the box so we can contact the student and parent or guardian.'
+  };
+  var STEP_FIELDS = {
+    1: ['firstName', 'lastName', 'year', 'school', 'studentEmail', 'studentMobile'],
+    2: ['courses'],
+    3: ['parentName', 'parentEmail', 'parentMobile', 'consent']
+  };
+  var LAST_STEP = 3;
+  var GROUP_FIELDS = ['year', 'courses']; // errors for these sit under a group, not one input
+  var FIELD_ORDER = [].concat(STEP_FIELDS[1], STEP_FIELDS[2], STEP_FIELDS[3]);
+  var STEP_NAMES = ['About the student', 'Courses', 'Parent or guardian'];
+  var step = 1;
+
+  // ---- Preview data (only used when API_URL is empty) ----------------------
+  var DEMO_PROGRAM = {
+    name: 'Holiday Program',
+    organisers: ['Dhwanit', "[Friend's name]"],
+    facts: [
+      { label: 'When', value: 'Dates to be confirmed' },
+      { label: 'Where', value: 'Location to be confirmed' },
+      { label: 'Cost', value: 'Price to be confirmed' },
+      { label: 'Group size', value: 'Small groups' }
+    ],
+    years: ['Year 11', 'Year 12'],
+    courses: [
+      { subject: 'English', options: ['English Standard', 'English Advanced'] },
+      { subject: 'Mathematics', options: ['Mathematics Standard', 'Mathematics Advanced', 'Mathematics Extension 1', 'Mathematics Extension 2'] },
+      { subject: 'Science', options: ['Physics', 'Chemistry', 'Biology'] }
+    ],
+    referralOption: 'A friend referred me',
+    heardOptions: ['A friend referred me', 'School', 'Social media', 'Other'],
+    privacyNote: "We only use these details to contact you about this program. We don't share them with anyone else.",
+    contactEmail: 'hello@example.com', capacity: 3, showPlaces: true, placesLeft: 3
+  };
+  var DEMO_PACK = [
+    { title: 'Key details', facts: [{ label: 'Dates and times', value: 'To be confirmed' }, { label: 'Location', value: 'To be confirmed' }, { label: 'Cost', value: 'To be confirmed' }] },
+    { title: 'What we will cover', lines: ['Topics are still being finalised. We will build the plan around what the group tells us it wants help with.', 'Sessions are small-group, so every student gets time to ask questions.'] },
+    { title: 'What to bring', lines: ['A calculator approved for NESA exams', 'Your notes or workbooks', 'Pens, a notepad and a water bottle'] },
+    { title: 'What happens next', steps: ['Keep an eye on your email (and check junk) for updates.', 'We confirm dates, location and fees, then contact the student and parent or guardian.', 'You confirm your place and pay to lock it in.'] }
+  ];
+  var demoRows = [];
+
+  // ---- API -------------------------------------------------------------------
+  function getProgram() {
+    if (DEMO) return Promise.resolve(JSON.parse(JSON.stringify(DEMO_PROGRAM)));
+    var url = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'action=program';
+    return fetch(url).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok) throw new Error('bad program response');
+      return j.program;
+    });
+  }
+
+  function signup(payload) {
+    if (DEMO) {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          var email = payload.studentEmail.toLowerCase();
+          var dupe = demoRows.filter(function (r) { return r.email === email; })[0];
+          var interested = demoRows.filter(function (r) { return r.status === 'Interested'; }).length;
+          var waitlisted = demoRows.length - interested;
+          var status, position, summary, already = false;
+          if (dupe) { status = dupe.status; position = dupe.position; summary = dupe.summary; already = true; }
+          else {
+            summary = payload.year + ': ' + payload.courses.join(', ');
+            if (interested >= DEMO_PROGRAM.capacity) { status = 'Waitlist'; position = waitlisted + 1; }
+            else { status = 'Interested'; position = interested + 1; }
+            demoRows.push({ email: email, status: status, position: position, summary: summary });
+          }
+          var left = Math.max(0, DEMO_PROGRAM.capacity - demoRows.filter(function (r) { return r.status === 'Interested'; }).length);
+          resolve({
+            ok: true, status: status, position: position, capacity: DEMO_PROGRAM.capacity, placesLeft: left,
+            alreadyRegistered: already, emailSent: !already, firstName: payload.firstName, summary: summary,
+            message: status === 'Waitlist'
+              ? "Places are full right now, so you're on the waitlist. We'll contact you if a place opens up."
+              : "Your interest is registered. Places are confirmed once the dates and fees are final, and we'll contact you then.",
+            pack: DEMO_PACK
+          });
+        }, 700);
+      });
+    }
+    // text/plain keeps this a "simple" request, so the browser skips the CORS preflight Apps Script can't answer.
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  // ---- DOM helpers (textContent only, so nothing from the server is parsed as HTML) ----
+  function $(id) { return document.getElementById(id); }
+  function el(tag, text, cls) {
+    var n = document.createElement(tag);
+    if (text != null) n.textContent = text;
+    if (cls) n.className = cls;
+    return n;
+  }
+
+  function renderFacts(target, facts) {
+    target.textContent = '';
+    facts.forEach(function (f) {
+      var row = el('div');
+      row.appendChild(el('dt', f.label));
+      row.appendChild(el('dd', f.value));
+      target.appendChild(row);
+    });
+  }
+
+  function fillSelect(select, options) {
+    options.forEach(function (o) {
+      var opt = el('option', o);
+      opt.value = o;
+      select.appendChild(opt);
+    });
+  }
+
+  function pill(type, name, value, id) {
+    var label = el('label', null, 'pill');
+    label.htmlFor = id;
+    var input = document.createElement('input');
+    input.type = type; input.name = name; input.value = value; input.id = id;
+    label.appendChild(input);
+    label.appendChild(el('span', value));
+    return label;
+  }
+
+  function renderYears(years) {
+    var box = $('yearPills');
+    box.textContent = '';
+    years.forEach(function (y, i) { box.appendChild(pill('radio', 'year', y, 'year-' + i)); });
+  }
+
+  function renderCourses(groups) {
+    var root = $('courseGroups');
+    root.textContent = '';
+    var n = 0;
+    groups.forEach(function (g) {
+      var fs = el('fieldset', null, 'subject');
+      fs.appendChild(el('legend', g.subject));
+      var pills = el('div', null, 'pills');
+      g.options.forEach(function (o) { pills.appendChild(pill('checkbox', 'courses', o, 'course-' + (n++))); });
+      fs.appendChild(pills);
+      root.appendChild(fs);
+    });
+  }
+
+  function renderPlaces(p) {
+    var n = $('places');
+    if (!p.showPlaces || p.placesLeft == null || !(p.capacity > 0)) { n.hidden = true; return; }
+    n.hidden = false;
+    n.textContent = p.placesLeft > 0
+      ? p.placesLeft + ' of ' + p.capacity + ' places left'
+      : 'Places are full. You can still join the waitlist.';
+  }
+
+  function renderPack(sections, prog) {
+    var root = $('pack');
+    root.textContent = '';
+    root.appendChild(el('h3', (prog && prog.name ? prog.name + ': ' : '') + 'info pack'));
+    sections.forEach(function (s) {
+      var sec = el('section');
+      sec.appendChild(el('h4', s.title));
+      if (s.facts) { var dl = el('dl', null, 'facts'); renderFacts(dl, s.facts); sec.appendChild(dl); }
+      if (s.lines) { var ul = el('ul'); s.lines.forEach(function (l) { ul.appendChild(el('li', l)); }); sec.appendChild(ul); }
+      if (s.steps) { var ol = el('ol'); s.steps.forEach(function (l) { ol.appendChild(el('li', l)); }); sec.appendChild(ol); }
+      root.appendChild(sec);
+    });
+  }
+
+  // ---- Form ----------------------------------------------------------------
+  var program = null;
+  var form = $('form');
+
+  function setError(name, message) {
+    var err = $('err-' + name);
+    if (err) err.textContent = message || '';
+    if (GROUP_FIELDS.indexOf(name) > -1) return;
+    var input = $(name);
+    if (!input) return;
+    if (message) {
+      input.setAttribute('aria-invalid', 'true');
+      if (name !== 'consent') input.setAttribute('aria-describedby', 'err-' + name);
+    } else {
+      input.removeAttribute('aria-invalid');
+      if (name !== 'consent') input.removeAttribute('aria-describedby');
+    }
+  }
+
+  function clearErrors() {
+    FIELD_ORDER.forEach(function (n) { setError(n, ''); });
+    $('formError').textContent = '';
+  }
+
+  function stepOf(name) {
+    for (var s = 1; s <= LAST_STEP; s++) if (STEP_FIELDS[s].indexOf(name) > -1) return s;
+    return 1;
+  }
+
+  function focusField(name) {
+    var t = (name === 'year' || name === 'courses') ? document.querySelector('input[name="' + name + '"]') : $(name);
+    if (t) t.focus();
+  }
+
+  function showErrors(errors) {
+    var first = null;
+    FIELD_ORDER.forEach(function (n) {
+      if (errors[n]) { setError(n, errors[n]); if (!first) first = n; }
+    });
+    if (first) { goTo(stepOf(first), false); focusField(first); }
+  }
+
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var phoneRe = /^[0-9+()\-\s]{8,20}$/;
+
+  function collect() {
+    function v(id) { return $(id).value.trim(); }
+    var yearEl = document.querySelector('input[name="year"]:checked');
+    var courses = [].slice.call(document.querySelectorAll('input[name="courses"]:checked')).map(function (c) { return c.value; });
+    var heard = v('heard');
+    return {
+      firstName: v('firstName'), lastName: v('lastName'), year: yearEl ? yearEl.value : '',
+      studentEmail: v('studentEmail'), studentMobile: v('studentMobile'), school: v('school'),
+      courses: courses,
+      parentName: v('parentName'), parentEmail: v('parentEmail'), parentMobile: v('parentMobile'),
+      heard: heard,
+      referrer: program && heard === program.referralOption ? v('referrer') : '',
+      goals: v('goals'),
+      consent: $('consent').checked,
+      website: $('website').value,
+      elapsed: Date.now() - loadedAt
+    };
+  }
+
+  function validate(d) {
+    var e = {};
+    if (!d.firstName) e.firstName = MSG.firstName;
+    if (!d.lastName) e.lastName = MSG.lastName;
+    if (!d.year) e.year = MSG.year;
+    if (!d.school) e.school = MSG.school;
+    if (!emailRe.test(d.studentEmail)) e.studentEmail = MSG.studentEmail;
+    if (d.studentMobile && !phoneRe.test(d.studentMobile)) e.studentMobile = MSG.studentMobile;
+    if (!d.courses.length) e.courses = MSG.courses;
+    if (!d.parentName) e.parentName = MSG.parentName;
+    if (!emailRe.test(d.parentEmail)) e.parentEmail = MSG.parentEmail;
+    if (d.parentMobile && !phoneRe.test(d.parentMobile)) e.parentMobile = MSG.parentMobile;
+    if (!d.consent) e.consent = MSG.consent;
+    return e;
+  }
+
+  // ---- Steps -----------------------------------------------------------------
+  function goTo(n, moveFocus) {
+    step = n;
+    [].forEach.call(document.querySelectorAll('.panel'), function (p) {
+      p.hidden = Number(p.getAttribute('data-panel')) !== n;
+    });
+    [].forEach.call($('steps').children, function (li, i) {
+      li.classList.toggle('done', i + 1 < n);
+      li.classList.toggle('current', i + 1 === n);
+      if (i + 1 === n) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
+    });
+    $('backBtn').hidden = n === 1;
+    $('nextBtn').textContent = n === LAST_STEP ? 'Register interest' : 'Next';
+    $('stepAnnounce').textContent = 'Step ' + n + ' of ' + LAST_STEP + ': ' + STEP_NAMES[n - 1];
+    if (moveFocus !== false) {
+      var top = form.getBoundingClientRect().top + window.pageYOffset - 16;
+      if (top < window.pageYOffset) window.scrollTo(0, Math.max(0, top));
+      var h = document.querySelector('.panel[data-panel="' + n + '"] h3');
+      if (h) h.focus({ preventScroll: true });
+    }
+  }
+
+  $('backBtn').addEventListener('click', function () {
+    clearErrors();
+    if (step > 1) goTo(step - 1);
+  });
+
+  // Clear a field's error as soon as the person changes it.
+  function clearOwnError(ev) {
+    var n = ev.target && ev.target.name;
+    if (n && $('err-' + n) && $('err-' + n).textContent) setError(n, '');
+  }
+  form.addEventListener('input', clearOwnError);
+  form.addEventListener('change', clearOwnError);
+
+  $('heard').addEventListener('change', function () {
+    var show = program && this.value === program.referralOption;
+    $('referrerField').hidden = !show;
+    if (!show) $('referrer').value = '';
+  });
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    clearErrors();
+    var data = collect();
+    var errors = validate(data);
+
+    if (step < LAST_STEP) {
+      var mine = {};
+      STEP_FIELDS[step].forEach(function (n) { if (errors[n]) mine[n] = errors[n]; });
+      if (Object.keys(mine).length) { showErrors(mine); return; }
+      goTo(step + 1);
+      return;
+    }
+    if (Object.keys(errors).length) { showErrors(errors); return; }
+
+    var btn = $('nextBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    signup(data).then(function (res) {
+      if (!res.ok) {
+        if (res.errors) showErrors(res.errors);
+        $('formError').textContent = res.error || 'Something went wrong. Try again.';
+        return;
+      }
+      showConfirmation(res);
+    }).catch(function () {
+      $('formError').textContent = 'The form could not be sent. Check your connection and send it again.';
+    }).then(function () {
+      btn.disabled = false;
+      btn.textContent = step === LAST_STEP ? 'Register interest' : 'Next';
+    });
+  });
+
+  function showConfirmation(res) {
+    var waitlist = res.status === 'Waitlist';
+    var first = res.firstName || 'there';
+
+    $('confirmTitle').textContent = res.alreadyRegistered
+      ? 'You’re already on the list, ' + first + '.'
+      : (waitlist ? 'You’re on the waitlist, ' + first + '.' : 'You’re on the list, ' + first + '.');
+
+    var stamp = '';
+    if (res.position) {
+      if (waitlist) stamp = 'Waitlist no. ' + res.position;
+      else stamp = res.capacity > 0 ? 'No. ' + res.position + ' of ' + res.capacity : 'No. ' + res.position;
+    }
+    $('stamp').textContent = stamp;
+    $('confirmMsg').textContent = res.message || '';
+    $('confirmSummary').textContent = res.summary ? 'Registered for: ' + res.summary : '';
+
+    var note;
+    if (res.alreadyRegistered) note = 'This email is already registered, so we haven’t sent another one. The pack is below.';
+    else if (res.emailSent) note = 'We’ve emailed the pack to the student and the parent or guardian. It’s also below.';
+    else note = 'We couldn’t email the pack. It’s below, and you can print or save it.';
+    $('confirmNote').textContent = note;
+
+    renderPack(res.pack || [], program);
+    renderPlaces({ showPlaces: program && program.showPlaces, placesLeft: res.placesLeft, capacity: res.capacity });
+
+    $('main').setAttribute('data-state', 'done');
+    var c = $('confirm');
+    c.classList.remove('animate');
+    void c.offsetWidth;
+    c.classList.add('animate');
+    window.scrollTo(0, 0);
+    c.focus({ preventScroll: true });
+  }
+
+  $('printBtn').addEventListener('click', function () { window.print(); });
+
+  // ---- Boot ------------------------------------------------------------------
+  function applyProgram(p) {
+    program = p;
+    $('brand').textContent = p.name;
+    document.title = p.name + ': register your interest';
+    renderFacts($('facts'), p.facts || []);
+    renderYears(p.years || []);
+    renderCourses(p.courses || []);
+    fillSelect($('heard'), p.heardOptions || []);
+    $('privacy').textContent = p.privacyNote || '';
+    $('faqPrivacy').textContent = p.privacyNote || '';
+    if (p.contactEmail) {
+      var fc = $('faqContact'); fc.textContent = 'Email us at ';
+      var a = el('a', p.contactEmail); a.href = 'mailto:' + p.contactEmail; fc.appendChild(a); fc.appendChild(document.createTextNode('.'));
+      var by = $('contactLine'); by.textContent = 'Questions? Email '; var a2 = el('a', p.contactEmail); a2.href = 'mailto:' + p.contactEmail; by.appendChild(a2); by.appendChild(document.createTextNode('.'));
+    }
+    $('byline').textContent = p.organisers && p.organisers.length ? 'Run by ' + p.organisers.join(' and ') + '.' : '';
+    renderPlaces(p);
+  }
+
+  if (DEMO) $('demoBanner').hidden = false;
+
+  getProgram().then(applyProgram).catch(function () {
+    $('formError').textContent = 'The form could not load. Reload the page, or try again in a few minutes.';
+    $('nextBtn').disabled = true;
+  });
+})();
+</script>
+</body>
+</html>
