@@ -386,8 +386,27 @@
 
   // TODO: after deploying the Apps Script, paste its web app URL here (ends in /exec).
   // While this is empty the page runs in preview mode with sample data.
-  var API_URL = 'https://script.google.com/macros/s/AKfycbypFVbPAH_OYIWn6eUumJvzjfI8_vCjN0uZYiCdJ6WSTvCRUf72vxthhlW5kel-CJqK0A/exec';
+  var API_URL = 'https://script.google.com/macros/s/AKfycbzjp3Y5crIer2Lyrlkwog9yzwyQkycOlx7QirIhjA1RKIXKZWMwZTj5E_oVFlDKT5jG/exec';
   var DEMO = !API_URL;
+
+  // Visitor counter (GoatCounter: free, no cookies, no personal data). Paste your site code here
+  // once you've signed up at goatcounter.com, e.g. 'holidayprogram' for holidayprogram.goatcounter.com.
+  // While this is empty, no analytics script loads.
+  var GOATCOUNTER_CODE = '';
+  if (GOATCOUNTER_CODE && !DEMO) {
+    var gc = document.createElement('script');
+    gc.async = true;
+    gc.src = 'https://gc.zgo.at/count.js';
+    gc.setAttribute('data-goatcounter', 'https://' + GOATCOUNTER_CODE + '.goatcounter.com/count');
+    document.head.appendChild(gc);
+  }
+  function trackEvent(name) {
+    try {
+      if (GOATCOUNTER_CODE && window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path: name, title: name, event: true });
+      }
+    } catch (e) { /* analytics must never break the form */ }
+  }
   var loadedAt = Date.now();
 
   var MSG = {
@@ -711,6 +730,7 @@
         $('formError').textContent = res.error || 'Something went wrong. Try again.';
         return;
       }
+      if (!res.alreadyRegistered) trackEvent('signup');
       showConfirmation(res);
     }).catch(function () {
       $('formError').textContent = 'The form could not be sent. Check your connection and send it again.';
